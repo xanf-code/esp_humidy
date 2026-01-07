@@ -8,6 +8,7 @@ import ntptime
 from sensors import DHTSensor
 from display import OLEDDisplay
 from server import HTTPServer
+from ota import OTAUpdater
 
 # ====================
 # CONSTANTS
@@ -28,7 +29,6 @@ WIFI_PASSWORD = "12345#23WorcesterSq#"
 sensor = DHTSensor(15)
 oled = OLEDDisplay()
 server = HTTPServer()
-
 rtc = RTC()
 
 # LED PWM (R = GPIO25, G = GPIO26)
@@ -92,7 +92,7 @@ def sync_time_on_boot():
             time.sleep(2)
 
 def get_local_time():
-    year, month, day, hour, minute, second, *_ = time.localtime()
+    _, _, _, hour, minute, _, _, _ = time.localtime()
     hour = (hour - 5) % 24  # EST offset
 
     if hour == 0:
@@ -137,6 +137,17 @@ def update_sensor_and_oled():
 # MAIN
 # ====================
 try:
+    # ---- OTA CHECK ON BOOT ----
+    ota = OTAUpdater()
+    has_update, version, payload = ota.check_for_update()
+
+    if has_update:
+        oled.show_message("Updating...", "Please wait")
+        files, base_url = payload
+        ota.install_update(files, base_url)
+        # device will reboot if update succeeds
+
+    # ---- NORMAL STARTUP ----
     connect_wifi()
     sync_time_on_boot()
     update_sensor_and_oled()
@@ -144,4 +155,3 @@ try:
 
 except Exception as e:
     oled.show_message("FATAL ERROR", str(e))
-
