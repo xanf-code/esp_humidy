@@ -11,13 +11,6 @@ from server import HTTPServer
 from ota import OTAUpdater
 
 # ====================
-# CONSTANTS
-# ====================
-DAY_BRIGHTNESS = 200
-NIGHT_BRIGHTNESS = 50
-LED_BRIGHTNESS = DAY_BRIGHTNESS
-
-# ====================
 # WIFI CONFIG
 # ====================
 WIFI_SSID = "APT3-23-24"
@@ -30,22 +23,6 @@ sensor = DHTSensor(15)
 oled = OLEDDisplay()
 server = HTTPServer()
 rtc = RTC()
-
-# LED PWM (R = GPIO25, G = GPIO26)
-red_led = PWM(Pin(25), freq=1000)
-green_led = PWM(Pin(26), freq=1000)
-
-def set_led(r, g):
-    red_led.duty(int(r * LED_BRIGHTNESS / 1023))
-    green_led.duty(int(g * LED_BRIGHTNESS / 1023))
-
-def update_led_brightness_by_time():
-    global LED_BRIGHTNESS
-    _, _, _, hour, _, _, _, _ = time.localtime()
-    if hour >= 21 or hour < 7:
-        LED_BRIGHTNESS = NIGHT_BRIGHTNESS
-    else:
-        LED_BRIGHTNESS = DAY_BRIGHTNESS
 
 # ====================
 # GLOBAL STATE
@@ -121,15 +98,6 @@ def update_sensor_and_oled():
     last_humidity = humidity
     last_update = time.time()
 
-    update_led_brightness_by_time()
-
-    if last_temp_c < 20:
-        set_led(900, 0)
-    elif last_temp_c > 23:
-        set_led(0, 900)
-    else:
-        set_led(900, 900)
-
     oled.show_reading(get_local_time(), last_temp_c, last_humidity)
     server.update_readings(last_temp_c, last_temp_f, last_humidity)
 
@@ -137,7 +105,7 @@ def update_sensor_and_oled():
 # MAIN
 # ====================
 try:
-    # ---- OTA CHECK ON BOOT ----
+    time.sleep(2)
     ota = OTAUpdater()
     has_update, version, payload = ota.check_for_update()
 
@@ -145,7 +113,6 @@ try:
         oled.show_message("Updating...", "Please wait")
         files, base_url = payload
         ota.install_update(files, base_url)
-        # device will reboot if update succeeds
 
     # ---- NORMAL STARTUP ----
     connect_wifi()
