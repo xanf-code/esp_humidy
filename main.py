@@ -9,12 +9,14 @@ from sensors import DHTSensor
 from display import OLEDDisplay
 from server import HTTPServer
 from ota import OTAUpdater
+from heater_control import HeaterController
 
 # ====================
 # WIFI CONFIG
 # ====================
 WIFI_SSID = "APT3-23-24"
 WIFI_PASSWORD = "12345#23WorcesterSq#"
+SENSOR_UPDATE_INTERVAL = 2
 
 # ====================
 # HARDWARE SETUP
@@ -22,6 +24,7 @@ WIFI_PASSWORD = "12345#23WorcesterSq#"
 sensor = DHTSensor(15)
 oled = OLEDDisplay()
 server = HTTPServer()
+heater = HeaterController()
 rtc = RTC()
 
 # ====================
@@ -89,6 +92,9 @@ def get_local_time():
 def update_sensor_and_oled():
     global last_temp_c, last_temp_f, last_humidity, last_update
 
+    if time.time() - last_update < SENSOR_UPDATE_INTERVAL:
+        return
+    
     temp_c, temp_f, humidity = sensor.read()
     if temp_c is None:
         return
@@ -100,6 +106,9 @@ def update_sensor_and_oled():
 
     oled.show_reading(get_local_time(), last_temp_c, last_humidity)
     server.update_readings(last_temp_c, last_temp_f, last_humidity)
+
+    # Check temperature and control heater
+    heater.check_and_control(last_temp_c)
 
 # ====================
 # MAIN

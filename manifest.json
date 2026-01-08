@@ -1,5 +1,5 @@
 {
-    "version": "1.6.0",
+    "version": "1.7.0",
     "files": [
         "boot.py",
         "main.py",
@@ -8,7 +8,8 @@
         "server.py",
         "ota.py",
         "config.py",
-        "ssd1306.py"
+        "ssd1306.py",
+        "heater_control.py"
     ],
     "base_url": "https://raw.githubusercontent.com/xanf-code/esp_humidy/main/"
 }
