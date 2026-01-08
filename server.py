@@ -20,7 +20,6 @@ class HTTPServer:
         s.settimeout(0.1)
 
         while True:
-            # Periodic sensor/UI update (same logic as before)
             update_callback()
 
             try:

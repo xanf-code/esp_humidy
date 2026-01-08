@@ -3,15 +3,12 @@ import time
 
 class HeaterController:
     def __init__(self):
-        # IFTTT webhook URLs
         self.turn_off_url = "https://maker.ifttt.com/trigger/turn_off/with/key/eWIgaqWsz6E7N0H1ShKiGwKTW2We9aekZ_kpcVt7Erw"
         self.turn_on_url = "https://maker.ifttt.com/trigger/turn_on_heater/with/key/eWIgaqWsz6E7N0H1ShKiGwKTW2We9aekZ_kpcVt7Erw"
 
-        # Temperature thresholds
         self.TEMP_HIGH = 27.0  # Turn off heater when >= 27°C
         self.TEMP_LOW = 21.0   # Turn on heater when <= 21°C
 
-        # State tracking
         self.heater_state = None  # None = unknown, True = on, False = off
         self.last_webhook_call = 0
         self.min_call_interval = 10  # Minimum seconds between webhook calls
@@ -26,11 +23,9 @@ class HeaterController:
 
         current_time = time.time()
 
-        # Prevent too frequent webhook calls
         if current_time - self.last_webhook_call < self.min_call_interval:
             return False, "Rate limited"
 
-        # Check if heater should be turned OFF
         if temp_c >= self.TEMP_HIGH and self.heater_state != False:
             success = self._turn_off_heater(temp_c)
             if success:
@@ -39,7 +34,6 @@ class HeaterController:
                 return True, f"Heater OFF (temp: {temp_c}°C)"
             return False, "Failed to turn off heater"
 
-        # Check if heater should be turned ON
         elif temp_c <= self.TEMP_LOW and self.heater_state != True:
             success = self._turn_on_heater(temp_c)
             if success:
@@ -52,7 +46,6 @@ class HeaterController:
         return False, f"Temp OK ({temp_c}°C)"
 
     def _turn_off_heater(self, temp_c):
-        """Call IFTTT webhook to turn off heater"""
         try:
             print(f"[HEATER] Turning OFF - Temperature: {temp_c}°C >= {self.TEMP_HIGH}°C")
             r = urequests.get(self.turn_off_url, timeout=5)
@@ -71,7 +64,6 @@ class HeaterController:
             return False
 
     def _turn_on_heater(self, temp_c):
-        """Call IFTTT webhook to turn on heater"""
         try:
             print(f"[HEATER] Turning ON - Temperature: {temp_c}°C <= {self.TEMP_LOW}°C")
             r = urequests.get(self.turn_on_url, timeout=5)
@@ -90,7 +82,6 @@ class HeaterController:
             return False
 
     def get_status(self):
-        """Get current heater status for display"""
         if self.heater_state is None:
             return "UNKNOWN"
         elif self.heater_state:
