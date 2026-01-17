@@ -7,7 +7,7 @@ class HeaterController:
         self.turn_on_url = "https://maker.ifttt.com/trigger/turn_on_heater/with/key/eWIgaqWsz6E7N0H1ShKiGwKTW2We9aekZ_kpcVt7Erw"
 
         self.TEMP_HIGH = 27.0  # Turn off heater when >= 27°C
-        self.TEMP_LOW = 21.0   # Turn on heater when <= 21°C
+        self.TEMP_LOW = 23.0   # Turn on heater when <= 21°C
 
         self.heater_state = None  # None = unknown, True = on, False = off
         self.last_webhook_call = 0
