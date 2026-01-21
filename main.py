@@ -115,6 +115,11 @@ def update_sensor_and_oled():
 # ====================
 try:
     time.sleep(2)
+
+    # ---- CONNECT WIFI FIRST ----
+    connect_wifi()
+
+    # ---- CHECK FOR OTA UPDATE ----
     ota = OTAUpdater()
     has_update, version, payload = ota.check_for_update()
 
@@ -124,7 +129,6 @@ try:
         ota.install_update(files, base_url)
 
     # ---- NORMAL STARTUP ----
-    connect_wifi()
     sync_time_on_boot()
     update_sensor_and_oled()
     server.start(update_sensor_and_oled)
