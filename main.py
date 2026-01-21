@@ -120,13 +120,19 @@ try:
     connect_wifi()
 
     # ---- CHECK FOR OTA UPDATE ----
+    oled.show_message("Checking OTA...")
     ota = OTAUpdater()
     has_update, version, payload = ota.check_for_update()
 
     if has_update:
+        oled.show_message("Update Found!", "v{}".format(version))
+        time.sleep(2)
         oled.show_message("Updating...", "Please wait")
         files, base_url = payload
         ota.install_update(files, base_url)
+    else:
+        oled.show_message("OTA Check Done", "v{} (current)".format(config.FIRMWARE_VERSION))
+        time.sleep(2)
 
     # ---- NORMAL STARTUP ----
     sync_time_on_boot()
