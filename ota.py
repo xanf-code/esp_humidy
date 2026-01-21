@@ -11,9 +11,29 @@ class OTAUpdater:
         try:
             with open("manifest.json", "r") as f:
                 manifest = json.load(f)
-                return manifest.get("version", "0.0.0")
-        except:
+                version = manifest.get("version", "0.0.0")
+                print("Local version:", version)
+                return version
+        except Exception as e:
+            print("Failed to read local version:", e)
             return "0.0.0"
+
+    def _compare_versions(self, v1, v2):
+        """Compare semantic versions. Returns True if v2 > v1"""
+        try:
+            v1_parts = [int(x) for x in v1.split('.')]
+            v2_parts = [int(x) for x in v2.split('.')]
+
+            for i in range(max(len(v1_parts), len(v2_parts))):
+                p1 = v1_parts[i] if i < len(v1_parts) else 0
+                p2 = v2_parts[i] if i < len(v2_parts) else 0
+                if p2 > p1:
+                    return True
+                elif p2 < p1:
+                    return False
+            return False
+        except:
+            return v2 != v1
 
     def check_for_update(self):
         try:
@@ -25,12 +45,18 @@ class OTAUpdater:
             files = manifest.get("files")
             base_url = manifest.get("base_url")
 
+            print("Remote version:", latest_version)
+            print("Current version:", self.current_version)
+
             if not latest_version or not files or not base_url:
                 return False, None, None
 
-            if latest_version != self.current_version:
+            # Only update if remote version is NEWER
+            if self._compare_versions(self.current_version, latest_version):
+                print("Update available!")
                 return True, latest_version, (files, base_url)
 
+            print("Already up to date")
             return False, latest_version, None
 
         except Exception as e:
