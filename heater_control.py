@@ -6,8 +6,8 @@ class HeaterController:
         self.turn_off_url = "https://maker.ifttt.com/trigger/turn_off/with/key/eWIgaqWsz6E7N0H1ShKiGwKTW2We9aekZ_kpcVt7Erw"
         self.turn_on_url = "https://maker.ifttt.com/trigger/turn_on_heater/with/key/eWIgaqWsz6E7N0H1ShKiGwKTW2We9aekZ_kpcVt7Erw"
 
-        self.TEMP_HIGH = 27.0  # Turn off heater when >= 27°C
-        self.TEMP_LOW = 23.0   # Turn on heater when <= 21°C
+        self.TEMP_HIGH = 26.0  # Turn off heater when >= 26°C
+        self.TEMP_LOW = 22.0   # Turn on heater when <= 22°C
 
         self.heater_state = None  # None = unknown, True = on, False = off
         self.last_webhook_call = 0
@@ -42,7 +42,7 @@ class HeaterController:
                 return True, f"Heater ON (temp: {temp_c}°C)"
             return False, "Failed to turn on heater"
 
-        # Temperature in deadband (21 < temp < 27), maintain current state
+        # Temperature in deadband (22 < temp < 26), maintain current state
         return False, f"Temp OK ({temp_c}°C)"
 
     def _turn_off_heater(self, temp_c):
