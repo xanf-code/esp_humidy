@@ -4,6 +4,7 @@ time.sleep(3)  # 🔑 BOOT SAFETY: allows Thonny to interrupt
 from machine import Pin, RTC, PWM
 import network
 import ntptime
+import json
 
 from sensors import DHTSensor
 from display import OLEDDisplay
@@ -17,6 +18,17 @@ from heater_control import HeaterController
 WIFI_SSID = "APT3-23-24"
 WIFI_PASSWORD = "12345#23WorcesterSq#"
 SENSOR_UPDATE_INTERVAL = 2
+
+# ====================
+# HELPER FUNCTIONS
+# ====================
+def get_current_version():
+    try:
+        with open("manifest.json", "r") as f:
+            manifest = json.load(f)
+            return manifest.get("version", "0.0.0")
+    except:
+        return "0.0.0"
 
 # ====================
 # HARDWARE SETUP
@@ -131,7 +143,7 @@ try:
         files, base_url = payload
         ota.install_update(files, base_url)
     else:
-        oled.show_message("OTA Check Done", "v{} (current)".format(config.FIRMWARE_VERSION))
+        oled.show_message("OTA Check Done", "v{} (current)".format(get_current_version()))
         time.sleep(2)
 
     # ---- NORMAL STARTUP ----

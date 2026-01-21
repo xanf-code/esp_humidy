@@ -1,11 +1,19 @@
 import urequests
-import config
 import machine
+import json
 
 class OTAUpdater:
     def __init__(self):
-        self.current_version = config.FIRMWARE_VERSION
-        self.manifest_url = config.MANIFEST_URL
+        self.manifest_url = "https://raw.githubusercontent.com/xanf-code/esp_humidy/main/manifest.json"
+        self.current_version = self._read_local_version()
+
+    def _read_local_version(self):
+        try:
+            with open("manifest.json", "r") as f:
+                manifest = json.load(f)
+                return manifest.get("version", "0.0.0")
+        except:
+            return "0.0.0"
 
     def check_for_update(self):
         try:

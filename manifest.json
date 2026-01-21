@@ -1,5 +1,5 @@
 {
-    "version": "2.2.0",
+    "version": "2.3.0",
     "files": [
         "boot.py",
         "main.py",
@@ -7,7 +7,6 @@
         "display.py",
         "server.py",
         "ota.py",
-        "config.py",
         "ssd1306.py",
         "heater_control.py"
     ],
